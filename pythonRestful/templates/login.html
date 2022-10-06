@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Intro - login page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Please login</h1>
+        <br>
+        <form>
+            <div class="form-group">
+                <input id="susername" type="text" class="form-control" style="width:50%;" placeholder="Username" name="susername" value="{{request.form.username }}">
+            </div>
+            <div class="form-group">
+                <input id="spassword" type="password" class="form-control" style="width:50%;" placeholder="Password" name="spassword" value="{{request.form.password }}">
+            </div>
+            <div id="error-message" class="messages"></div>
+            <div id="success-message" class="messages"></div>
+            <input id="login" class="btn btn-success" type="submit" value="Login">
+
+        </form>
+        {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+        {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#login').on("click",function(e){
+        e.preventDefault();
+        var username = $('#susername').val();
+        var password = $('#spassword').val();
+        console.log(username)
+      if ( username == "" || password == "") {
+          message('All fields are required !', false);
+      }else{
+        $.ajax({
+          url : "{{ url_for('login')}}",
+          type : "POST",
+          data : JSON.stringify({username : username, password : password}),
+          dataType : "json",
+          contentType : "application/json; charset=utf-8",
+          success : function(data){
+              if (data == 1) {
+                window.location.href=("{{url_for('homepage')}}")
+                message('login success ^^', true);
+              }else{
+                message('login fail, pleas login again  !', false);
+              }
+          }
+        });
+      }
+    });
+
+
+    function message(msg, status) {
+      if (status == true){
+        $('#error-message').hide();
+        $('#success-message').slideDown();
+        $('#success-message').html(msg);
+        setTimeout(function(){
+          $('#success-message').slideUp();
+        }, 4000);
+      }else{
+        $('#error-message').slideDown();
+        $('#success-message').hide();
+        $('#error-message').html(msg);
+        setTimeout(function(){
+          $('#error-message').slideUp();
+        }, 4000);
+      }
+    }
+
+
+    });
+</script>
+</body>
+</html>
